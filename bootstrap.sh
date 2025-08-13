@@ -289,9 +289,12 @@ HOSTNAME="__HOSTNAME__"
 curl -fsS -m 5 -X POST "${API_BASE}/heartbeat" -H "Content-Type: application/json" \
   -d "{\"device_id\":\"${DEVICE_ID}\",\"hostname\":\"${HOSTNAME}\",\"ts\":\"$(date -Is)\"}" >/dev/null || true
 HB
+
   sed -i "s#__API_BASE__#${API_BASE}#g; s#__DEVICE_ID__#${DEVICE_ID}#g; s#__HOSTNAME__#${HOSTNAME}#g" /usr/local/bin/edge-heartbeat.sh
   chmod +x /usr/local/bin/edge-heartbeat.sh
-  ( crontab -l 2>/dev/null; echo "${HEARTBEAT_CRON} /usr/local/bin/edge-heartbeat.sh" ) | crontab -
+
+  # Crontab-Eintrag robust anlegen (kein Syntaxproblem, auch wenn noch keine Crontab existiert)
+  ( crontab -l 2>/dev/null || true; echo "${HEARTBEAT_CRON} /usr/local/bin/edge-heartbeat.sh" ) | crontab -
 else
   echo "Kein --api angegeben: Überspringe Heartbeat."
 fi
