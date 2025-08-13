@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Warten, bis apt/dpkg frei ist
+while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 ; do
+    echo "Warte auf APT-Lock..."
+    sleep 3
+done
+
+
 # =========================
 #   PARAMETER / DEFAULTS
 # =========================
